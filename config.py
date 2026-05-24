@@ -14,7 +14,6 @@ import os
 #ZERODHA_API_SECRET   = os.environ.get("ZERODHA_API_SECRET",   "")
 #ZERODHA_ACCESS_TOKEN = os.environ.get("ZERODHA_ACCESS_TOKEN", "")
 
-
 # ── Mode ──────────────────────────────────────────────────────────────────────
 TRADING_MODE = "paper"   # "paper" | "live"
 
