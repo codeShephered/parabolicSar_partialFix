@@ -1011,7 +1011,8 @@ class PatternEngine:
         #Changes done on May-23-2026 for candle accuracy
         # candles[:-3] = all candles before c1 → downtrend context window  
         # falls back to loose mode (in_downtrend=True) when len < 3 
-        preceding = candles[:-3] if len(candles) > 3 else [] 
+        #Considers only last 5 candles and not all candles
+        preceding = candles[-5:-3] if len(candles) > 3 else [] 
         # ── 3-candle (strongest first) ────────────────────────────────────────
         if n >= 3:
             c1, c2, c3 = candles[-3], candles[-2], candles[-1]

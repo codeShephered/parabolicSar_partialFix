@@ -69,7 +69,10 @@ OPTION_VOLATILITY = {"NIFTY": 0.14, "BANKNIFTY": 0.17}
 
 # ── SMA for trend alignment pre-filter ────────────────────────────────────────
 SMA_PERIOD        = 20
-TREND_FILTER_PCT  = 0.5    # reject signal if price > 0.5% against SMA direction
+#TREND_FILTER_PCT  = 0.5    # reject signal if price > 0.5% against SMA direction
+#changes on 24-May-2026
+TREND_FILTER_BULLISH_PCT = 0.5 # block bullish if price > 0.5% below SMA20
+TREND_FILTER_BEARISH_PCT = 1.0 
 
 # ── Logging ───────────────────────────────────────────────────────────────────
 LOG_FILE        = "trading.log"

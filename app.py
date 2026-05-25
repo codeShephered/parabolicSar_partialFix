@@ -196,7 +196,7 @@ def _process(instrument: str) -> None:
     sma20   = sum(c.close for c in hist[-sma_n:]) / sma_n if sma_n else price
     below   = (sma20 - price) / sma20 * 100
     above   = (price - sma20) / sma20 * 100
-    tol     = config.TREND_FILTER_PCT
+    #tol     = config.TREND_FILTER_PCT
 
     pattern, direction = pattern_engine.scan(last3)
     if not pattern:
@@ -204,12 +204,30 @@ def _process(instrument: str) -> None:
         return
 
     # Reject if direction opposes trend (no volume gate — shape + SAR only)
-    if direction == "bullish" and below > tol:
-        logger.debug(f"{instrument}: {pattern} bullish blocked — {below:.1f}% below SMA20")
+    # if direction == "bullish" and below > tol:
+    #     logger.debug(f"{instrument}: {pattern} bullish blocked — {below:.1f}% below SMA20")
+    #     state["signals"][instrument] = {"type": "none"}
+    #     return
+    # if direction == "bearish" and above > tol:
+    #     logger.debug(f"{instrument}: {pattern} bearish blocked — {above:.1f}% above SMA20")
+    #     state["signals"][instrument] = {"type": "none"}
+    #     return
+    #Changes made on 24-May - 2026
+    # OLD — symmetric, kills bearish entries in uptrend reversal:
+    # NEW — asymmetric, correct for both directions:
+    if direction == "bullish" and below > config.TREND_FILTER_BULLISH_PCT:
+        logger.debug(
+            f"{instrument}: {pattern} bullish blocked — "
+            f"{below:.1f}% below SMA20"
+        )
         state["signals"][instrument] = {"type": "none"}
         return
-    if direction == "bearish" and above > tol:
-        logger.debug(f"{instrument}: {pattern} bearish blocked — {above:.1f}% above SMA20")
+
+    if direction == "bearish" and above > config.TREND_FILTER_BEARISH_PCT:
+        logger.debug(
+            f"{instrument}: {pattern} bearish blocked — "
+            f"{above:.1f}% above SMA20 (runaway, not reversal)"
+        )
         state["signals"][instrument] = {"type": "none"}
         return
 
