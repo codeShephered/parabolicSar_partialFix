@@ -34,15 +34,25 @@ IMMEDIATE_EXIT_PATTERNS: frozenset = frozenset({
     "Bullish Engulfing",
     "Bearish Engulfing",
 })
-
+'''
 BULLISH_PATTERNS: frozenset = frozenset({
     "Morning Doji Star", "Three White Soldiers", "Bullish Engulfing",
     "Morning Star", "Piercing Line", "Hammer",
 })
-
+'''
+BULLISH_PATTERNS: frozenset = frozenset({
+    "Morning Doji Star", "Three White Soldiers", "Bullish Engulfing",
+    "Morning Star",
+})
+'''
 BEARISH_PATTERNS: frozenset = frozenset({
     "Evening Doji Star", "Three Black Crows", "Bearish Engulfing",
     "Evening Star", "Dark Cloud Cover", "Shooting Star",
+})
+'''
+BEARISH_PATTERNS: frozenset = frozenset({
+    "Evening Doji Star", "Three Black Crows", "Bearish Engulfing",
+    "Evening Star",
 })
 
 # ── Candle helpers ────────────────────────────────────────────────────────────
@@ -737,6 +747,7 @@ def _bearish_engulfing(
 
 
 # Changes done on 23-May-2026 — accurate Piercing Line
+'''
 def _piercing_line(
     c1: Candle,
     c2: Candle,
@@ -838,7 +849,7 @@ def _dark_cloud_cover(
         and gap_up
         and penetrates
     )
-
+'''
 # ── 1-candle patterns ─────────────────────────────────────────────────────────
 
 # # Changes made on 21-May-2026 for candle accuracy
@@ -884,6 +895,7 @@ def _dark_cloud_cover(
 
 # Changes made on 23-May-2026 for more accuracy
 # Changes done on 23-May-2026 — accurate Hammer for 5-min intraday
+'''
 def _hammer(
     c: Candle,
     preceding_candles: list[Candle] | None = None,
@@ -993,7 +1005,7 @@ def _shooting_star(
         and long_upper_wick
         and tiny_lower_wick
     )
-
+'''
 
 # ── Pattern Engine ────────────────────────────────────────────────────────────
 
@@ -1061,21 +1073,23 @@ class PatternEngine:
                 return "Bullish Engulfing", "bullish"
 
             # if _piercing_line(c1, c2):
+          '''
             if _piercing_line(c1, c2, preceding_candles=preceding):
                 logger.info("▲ Piercing Line (81%) — BULLISH")
                 return "Piercing Line", "bullish"
-
+          '''
             # if _bearish_engulfing(c1, c2):
             if _bearish_engulfing(c1, c2, preceding_candles=preceding):
                 logger.info("▼ Bearish Engulfing (83%) — BEARISH")
                 return "Bearish Engulfing", "bearish"
-
+            '''
             # if _dark_cloud_cover(c1, c2):
             if _dark_cloud_cover(c1, c2, preceding_candles=preceding):
                 logger.info("▼ Dark Cloud Cover (81%) — BEARISH")
                 return "Dark Cloud Cover", "bearish"
-
+            '''
         # ── 1-candle ──────────────────────────────────────────────────────────
+      '''
         c = candles[-1]
         #if _hammer(c):
         if _hammer(c, preceding_candles=preceding):
@@ -1085,7 +1099,7 @@ class PatternEngine:
         if _shooting_star(c, preceding_candles=preceding):
             logger.info("▼ Shooting Star (80%) — BEARISH")
             return "Shooting Star", "bearish"
-
+        '''
         return None, "none"
 
     def is_reversal_of(
