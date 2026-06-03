@@ -1067,10 +1067,6 @@ class PatternEngine:
         if n >= 2:
             c1, c2 = candles[-2], candles[-1]
 
-                    if n >= 2:
-            c1, c2 = candles[-2], candles[-1]
-
-            # if _bullish_engulfing(c1, c2):
             if _bullish_engulfing(c1, c2, preceding_candles=preceding):
                 logger.info("▲ Bullish Engulfing (83%) — BULLISH")
                 return "Bullish Engulfing", "bullish"
