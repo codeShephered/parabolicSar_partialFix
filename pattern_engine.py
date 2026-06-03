@@ -1067,21 +1067,20 @@ class PatternEngine:
         if n >= 2:
             c1, c2 = candles[-2], candles[-1]
 
+                    if n >= 2:
+            c1, c2 = candles[-2], candles[-1]
+
             # if _bullish_engulfing(c1, c2):
             if _bullish_engulfing(c1, c2, preceding_candles=preceding):
                 logger.info("▲ Bullish Engulfing (83%) — BULLISH")
                 return "Bullish Engulfing", "bullish"
 
-            # if _piercing_line(c1, c2):
-          '''
-            if _piercing_line(c1, c2, preceding_candles=preceding):
-                logger.info("▲ Piercing Line (81%) — BULLISH")
-                return "Piercing Line", "bullish"
-          '''
-            # if _bearish_engulfing(c1, c2):
+
             if _bearish_engulfing(c1, c2, preceding_candles=preceding):
                 logger.info("▼ Bearish Engulfing (83%) — BEARISH")
                 return "Bearish Engulfing", "bearish"
+        
+        return None, "none"
             '''
             # if _dark_cloud_cover(c1, c2):
             if _dark_cloud_cover(c1, c2, preceding_candles=preceding):
@@ -1100,7 +1099,7 @@ class PatternEngine:
             logger.info("▼ Shooting Star (80%) — BEARISH")
             return "Shooting Star", "bearish"
         '''
-        return None, "none"
+        #return None, "none"
 
     def is_reversal_of(
         self, candles: list[Candle], open_direction: str
