@@ -1077,25 +1077,6 @@ class PatternEngine:
                 return "Bearish Engulfing", "bearish"
         
         return None, "none"
-            '''
-            # if _dark_cloud_cover(c1, c2):
-            if _dark_cloud_cover(c1, c2, preceding_candles=preceding):
-                logger.info("▼ Dark Cloud Cover (81%) — BEARISH")
-                return "Dark Cloud Cover", "bearish"
-            '''
-        # ── 1-candle ──────────────────────────────────────────────────────────
-      '''
-        c = candles[-1]
-        #if _hammer(c):
-        if _hammer(c, preceding_candles=preceding):
-            logger.info("▲ Hammer (80%) — BULLISH")
-            return "Hammer", "bullish"
-        #if _shooting_star(c):
-        if _shooting_star(c, preceding_candles=preceding):
-            logger.info("▼ Shooting Star (80%) — BEARISH")
-            return "Shooting Star", "bearish"
-        '''
-        #return None, "none"
 
     def is_reversal_of(
         self, candles: list[Candle], open_direction: str
