@@ -34,22 +34,22 @@ IMMEDIATE_EXIT_PATTERNS: frozenset = frozenset({
     "Bullish Engulfing",
     "Bearish Engulfing",
 })
-'''
+
 BULLISH_PATTERNS: frozenset = frozenset({
     "Morning Doji Star", "Three White Soldiers", "Bullish Engulfing",
     "Morning Star", "Piercing Line", "Hammer",
 })
-'''
+
 BULLISH_PATTERNS: frozenset = frozenset({
     "Morning Doji Star", "Three White Soldiers", "Bullish Engulfing",
     "Morning Star",
 })
-'''
+
 BEARISH_PATTERNS: frozenset = frozenset({
     "Evening Doji Star", "Three Black Crows", "Bearish Engulfing",
     "Evening Star", "Dark Cloud Cover", "Shooting Star",
 })
-'''
+
 BEARISH_PATTERNS: frozenset = frozenset({
     "Evening Doji Star", "Three Black Crows", "Bearish Engulfing",
     "Evening Star",
@@ -110,18 +110,18 @@ def _is_doji(c: Candle, threshold: float = 0.1) -> bool:
 #     )
 
 # def _evening_doji_star(c1, c2, c3):
-#     c2_body_top = max(c2.open_price, c2.close)
-#     c2_body_bot = min(c2.open_price, c2.close)
-#     c1_midpoint = (c1.open_price + c1.close) / 2
-#     return (
-#         c1.is_bullish()
-#         and _body(c1) > _range(c1) * 0.5
-#         and _is_doji(c2)
-#         and c2_body_bot > c1.close           # ← body gaps, not wick
-#         and c3.is_bearish()
-#         and c3.open_price < c2_body_top      # ← C3 gaps down below C2 body
-#         and c3.close < c1_midpoint           # ← closes below C1 midpoint
-#     )
+    # c2_body_top = max(c2.open_price, c2.close)
+    # c2_body_bot = min(c2.open_price, c2.close)
+    # c1_midpoint = (c1.open_price + c1.close) / 2
+    # return (
+    #     c1.is_bullish()
+    #     and _body(c1) > _range(c1) * 0.5
+    #     and _is_doji(c2)
+    #     and c2_body_bot > c1.close           # ← body gaps, not wick
+    #     and c3.is_bearish()
+    #     and c3.open_price < c2_body_top      # ← C3 gaps down below C2 body
+    #     and c3.close < c1_midpoint           # ← closes below C1 midpoint
+    # )
 #Changes made on 23-May-2026 for more accuracy and bug fix
 def _is_doji(c: Candle, threshold: float = 0.1) -> bool:
     """
@@ -747,7 +747,7 @@ def _bearish_engulfing(
 
 
 # Changes done on 23-May-2026 — accurate Piercing Line
-'''
+
 def _piercing_line(
     c1: Candle,
     c2: Candle,
@@ -849,7 +849,7 @@ def _dark_cloud_cover(
         and gap_up
         and penetrates
     )
-'''
+
 # ── 1-candle patterns ─────────────────────────────────────────────────────────
 
 # # Changes made on 21-May-2026 for candle accuracy
@@ -895,7 +895,7 @@ def _dark_cloud_cover(
 
 # Changes made on 23-May-2026 for more accuracy
 # Changes done on 23-May-2026 — accurate Hammer for 5-min intraday
-'''
+
 def _hammer(
     c: Candle,
     preceding_candles: list[Candle] | None = None,
@@ -1005,7 +1005,7 @@ def _shooting_star(
         and long_upper_wick
         and tiny_lower_wick
     )
-'''
+
 
 # ── Pattern Engine ────────────────────────────────────────────────────────────
 
@@ -1076,6 +1076,17 @@ class PatternEngine:
                 logger.info("▼ Bearish Engulfing (83%) — BEARISH")
                 return "Bearish Engulfing", "bearish"
         
+        # ── 1-candle ──────────────────────────────────────────────────────────
+        c = candles[-1]
+        #if _hammer(c):
+        if _hammer(c, preceding_candles=preceding):
+            logger.info("▲ Hammer (80%) — BULLISH")
+            return "Hammer", "bullish"
+        #if _shooting_star(c):
+        if _shooting_star(c, preceding_candles=preceding):
+            logger.info("▼ Shooting Star (80%) — BEARISH")
+            return "Shooting Star", "bearish"
+
         return None, "none"
 
     def is_reversal_of(

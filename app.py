@@ -203,6 +203,31 @@ def _process(instrument: str) -> None:
         state["signals"][instrument] = {"type": "none"}
         return
 
+    # ── Pattern strength gate ────────────────────────────────────────────────
+    # Reject patterns whose indicator candle (last candle of the pattern) has
+    # a body smaller than the instrument's minimum threshold. The existing
+    # pattern detectors use only RATIO-based checks (body/range, wick/body)
+    # which a 5-point "candle" can satisfy as easily as a 50-point one — so
+    # tiny consolidation candles pass through and trigger false reversals.
+    #
+    # Example: 09-Jun-2026 11:15 NIFTY candle: body=8.7 pts (0.038% of spot)
+    # was flagged Bullish Engulfing and entered CE — the next candle dumped
+    # 50+ points. Setting min_signal_body_pct=0.10% rejects this.
+    inst_cfg     = config.INSTRUMENTS[instrument]
+    min_body_pct = inst_cfg.get("min_signal_body_pct", 0.0)
+    if min_body_pct > 0 and last3:
+        signal_candle = last3[-1]
+        body_pts      = signal_candle.body()
+        body_pct      = (body_pts / price * 100.0) if price else 0.0
+        if body_pct < min_body_pct:
+            logger.info(
+                f"{instrument}: {pattern} rejected — signal candle body "
+                f"{body_pts:.2f} pts ({body_pct:.3f}% of spot) below "
+                f"min threshold {min_body_pct:.2f}% (noise filter)"
+            )
+            state["signals"][instrument] = {"type": "none"}
+            return
+        
     # Reject if direction opposes trend (no volume gate — shape + SAR only)
     # if direction == "bullish" and below > tol:
     #     logger.debug(f"{instrument}: {pattern} bullish blocked — {below:.1f}% below SMA20")

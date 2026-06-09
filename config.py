@@ -14,6 +14,7 @@ import os
 #ZERODHA_API_SECRET   = os.environ.get("ZERODHA_API_SECRET",   "")
 #ZERODHA_ACCESS_TOKEN = os.environ.get("ZERODHA_ACCESS_TOKEN", "")
 
+
 # ── Mode ──────────────────────────────────────────────────────────────────────
 TRADING_MODE = "paper"   # "paper" | "live"
 
@@ -40,6 +41,12 @@ INSTRUMENTS = {
         "ce_strike_mode":  "otm",
         "pe_strike_mode":  "otm",
         "profit_threshold": 50.0,     # ← NEW: minimum profit to exit on reversal
+        # Pattern strength gate — reject signals whose indicator candle body
+        # is smaller than this fraction of the spot price. A typical NIFTY
+        # ATR(14) ≈ 30-50 pts (~0.15-0.20% of spot at ₹23K), so 0.10% filters
+        # only the tiny "noise candle" patterns while keeping real reversals.
+        # 0.10% of 23,000 = 23 pts minimum body.
+        "min_signal_body_pct": 0.10,
     },
     "BANKNIFTY": {
         "zerodha_symbol":  "NSE:NIFTY BANK",
@@ -52,6 +59,9 @@ INSTRUMENTS = {
         "ce_strike_mode":  "otm",
         "pe_strike_mode":  "otm",
         "profit_threshold": 90.0,     # ← NEW: minimum profit to exit on reversal
+        # 0.12% of 52,000 = ~62 pts minimum body (BANKNIFTY is choppier so
+        # the threshold is slightly higher in % terms to filter more noise).
+        "min_signal_body_pct": 0.12,
     },
 }
 
