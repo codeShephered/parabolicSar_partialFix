@@ -46,7 +46,13 @@ INSTRUMENTS = {
         # ATR(14) ≈ 30-50 pts (~0.15-0.20% of spot at ₹23K), so 0.10% filters
         # only the tiny "noise candle" patterns while keeping real reversals.
         # 0.10% of 23,000 = 23 pts minimum body.
-        "min_signal_body_pct": 0.10,
+        #"min_signal_body_pct": 0.10,
+        # Pattern noise filter — reject patterns whose TOTAL RANGE
+        # (highest high − lowest low across the pattern's candles)
+        # is smaller than this fraction of spot. Uses 2 candles for
+        # engulfing, 3 candles for star / soldiers / crows.
+        # 0.10% of 23,000 = 23 pts total range minimum.
+        "min_pattern_range_pct": 0.10,
     },
     "BANKNIFTY": {
         "zerodha_symbol":  "NSE:NIFTY BANK",
@@ -61,7 +67,13 @@ INSTRUMENTS = {
         "profit_threshold": 90.0,     # ← NEW: minimum profit to exit on reversal
         # 0.12% of 52,000 = ~62 pts minimum body (BANKNIFTY is choppier so
         # the threshold is slightly higher in % terms to filter more noise).
-        "min_signal_body_pct": 0.12,
+        #"min_signal_body_pct": 0.12,
+        # Pattern noise filter — reject patterns whose TOTAL RANGE
+        # (highest high − lowest low across the pattern's candles)
+        # is smaller than this fraction of spot. Uses 2 candles for
+        # engulfing, 3 candles for star / soldiers / crows.
+        # 0.10% of 23,000 = 23 pts total range minimum.
+        "min_pattern_range_pct": 0.12,
     },
 }
 

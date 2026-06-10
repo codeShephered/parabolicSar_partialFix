@@ -213,17 +213,51 @@ def _process(instrument: str) -> None:
     # Example: 09-Jun-2026 11:15 NIFTY candle: body=8.7 pts (0.038% of spot)
     # was flagged Bullish Engulfing and entered CE — the next candle dumped
     # 50+ points. Setting min_signal_body_pct=0.10% rejects this.
-    inst_cfg     = config.INSTRUMENTS[instrument]
-    min_body_pct = inst_cfg.get("min_signal_body_pct", 0.0)
-    if min_body_pct > 0 and last3:
-        signal_candle = last3[-1]
-        body_pts      = signal_candle.body()
-        body_pct      = (body_pts / price * 100.0) if price else 0.0
-        if body_pct < min_body_pct:
+    # inst_cfg     = config.INSTRUMENTS[instrument]
+    # min_body_pct = inst_cfg.get("min_signal_body_pct", 0.0)
+    # if min_body_pct > 0 and last3:
+    #     signal_candle = last3[-1]
+    #     body_pts      = signal_candle.body()
+    #     body_pct      = (body_pts / price * 100.0) if price else 0.0
+    #     if body_pct < min_body_pct:
+    #         logger.info(
+    #             f"{instrument}: {pattern} rejected — signal candle body "
+    #             f"{body_pts:.2f} pts ({body_pct:.3f}% of spot) below "
+    #             f"min threshold {min_body_pct:.2f}% (noise filter)"
+    #         )
+    #         state["signals"][instrument] = {"type": "none"}
+    #         return
+
+    # Reject patterns whose TOTAL RANGE (highest high - lowest low) across
+    # the pattern's candles is too small to be a meaningful signal.
+    #
+    # WHY RANGE, NOT LAST CANDLE'S BODY:
+    # 3-candle patterns (Three Black Crows, Three White Soldiers, all star
+    # variants) carry their strength in the CUMULATIVE move across all 3
+    # candles. Measuring only the last candle's body rejects valid signals
+    # like the 10-Jun-2026 10:05 Three Black Crows (C3 body=19.6 pts but
+    # total 3-candle drop ≈ 60 pts).
+    #
+    # Engulfing patterns use the 2 actual pattern candles, not all 3 of
+    # last3, so a wide preceding candle can't inflate the range and let a
+    # weak engulfing through.
+    TWO_CANDLE_PATTERNS = ("Bullish Engulfing", "Bearish Engulfing")
+
+    inst_cfg = config.INSTRUMENTS[instrument]
+    # Support both the new key and the old key for backward compatibility
+    min_range_pct = inst_cfg.get("min_pattern_range_pct",
+                                  inst_cfg.get("min_signal_body_pct", 0.0))
+    if min_range_pct > 0 and last3:
+        n_candles = 2 if pattern in TWO_CANDLE_PATTERNS else 3
+        pat = last3[-n_candles:]
+        range_pts = max(c.high for c in pat) - min(c.low for c in pat)
+        range_pct = (range_pts / price * 100.0) if price else 0.0
+        if range_pct < min_range_pct:
             logger.info(
-                f"{instrument}: {pattern} rejected — signal candle body "
-                f"{body_pts:.2f} pts ({body_pct:.3f}% of spot) below "
-                f"min threshold {min_body_pct:.2f}% (noise filter)"
+                f"{instrument}: {pattern} rejected — pattern range "
+                f"{range_pts:.2f} pts ({range_pct:.3f}% of spot, "
+                f"across {n_candles} candles) below min "
+                f"{min_range_pct:.2f}% (noise filter)"
             )
             state["signals"][instrument] = {"type": "none"}
             return
